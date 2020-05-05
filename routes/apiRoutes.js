@@ -7,22 +7,21 @@
 const fs = require('fs');
 const path = require('path');
 const util = require("util");
+let dbData = require("../db/db.json");
 const writeFileAsync = util.promisify(fs.writeFile);
+
 // ===============================================================================
 // LOAD DATA
 // We are linking our routes to a series of "data" sources.
 // These data sources hold arrays of information on notes
 // ===============================================================================
-var notesList = [];
+let notesList = [];
 
 
 if ( fs.existsSync(path.join(__dirname, "../db/db.json")) ) { //Check if file exists
   //read file data
-  notesList =  fs.readFileSync(path.join(__dirname, "../db/db.json"), 'utf-8');
-  JSON.parse(notesList);
-  console.log(notesList);
+  notesList = JSON.parse (fs.readFileSync(path.join(__dirname, "../db/db.json")));
 }
-
 // Create output file
 // writeFileAsync(outputPath, html, { flag : 'w' }, (err) => {
   //     if (err) throw err;
@@ -43,8 +42,7 @@ if ( fs.existsSync(path.join(__dirname, "../db/db.json")) ) { //Check if file ex
   
   app.get("/api/notes", function(req, res) { 
     // Should return the `db.json` file and return all saved notes as JSON.
-    console.log('api works')
-    res.json(notesList);
+    res.send(notesList);
   });
 
  
