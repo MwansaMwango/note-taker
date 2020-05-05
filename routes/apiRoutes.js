@@ -7,7 +7,8 @@
 const fs = require('fs');
 const path = require('path');
 const util = require("util");
-let dbData = require("../db/db.json");
+const dBPath = path.join(__dirname, "../db/db.json");
+const dBPath_dir = path.join(__dirname, "../db");
 const writeFileAsync = util.promisify(fs.writeFile);
 
 // ===============================================================================
@@ -17,18 +18,15 @@ const writeFileAsync = util.promisify(fs.writeFile);
 // ===============================================================================
 let notesList = [];
 
-
-if ( fs.existsSync(path.join(__dirname, "../db/db.json")) ) { //Check if file exists
-  //read file data
-  notesList = JSON.parse (fs.readFileSync(path.join(__dirname, "../db/db.json")));
+function readNotesList () {
+  if ( fs.existsSync(dBPath) ) { //Check if file exists
+    //read file data
+    return notesList = JSON.parse (fs.readFileSync(dBPath));
+    
+  }
 }
-// Create output file
-// writeFileAsync(outputPath, html, { flag : 'w' }, (err) => {
-  //     if (err) throw err;
-  //     console.log("Succesfully created your awesome team profile webpage. Check folder 'Outputs/team.html'")
-  // });   
-  
-  // ===============================================================================
+
+// ===============================================================================
   // ROUTING
   // ===============================================================================
   
@@ -36,46 +34,34 @@ if ( fs.existsSync(path.join(__dirname, "../db/db.json")) ) { //Check if file ex
   
   // API GET Requests
   // Below code handles when users "visit" a page.
-  // In each of the below cases when a user visits a link
-  // (ex: localhost:PORT/api/admin... they are shown a JSON of the data in the table)
   // ---------------------------------------------------------------------------
   
   app.get("/api/notes", function(req, res) { 
     // Should return the `db.json` file and return all saved notes as JSON.
-    res.send(notesList);
+    res.send(readNotesList());
+    res.end;
   });
-
  
   // API POST Requests
   // Below code handles when a user submits a form and thus submits data to the server.
   //------------------------------------------------------------------------
 
-  // app.post("/api/notes", function(req, res) {
-  //   // Should recieve a new note to save on the request body, add it to the `db.json` file, 
-  //   // and then return the new note to the client.
-  //   // req.body is available since we're using the body parsing middleware
-  //   if (tableData.length < 5) {
-  //     tableData.push(req.body);
-  //     res.json(true);
-  //   }
-  //   else {
-  //     waitListData.push(req.body);
-  //     res.json(false);
-  //   }
-  // });
+  app.post("/api/notes", function(req, res) {
+    console.log(req.body)  
+    
+    notesList = readNotesList();
+    notesList.push(req.body);
 
-  // app.delete("/api/notes/:id", function(req, res) {
-  //   // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-  //   // It will do this by sending out the value "true" have a table
-  //   // req.body is available since we're using the body parsing middleware
-  //   if (tableData.length < 5) {
-  //     tableData.push(req.body);
-  //     res.json(true);
-  //   }
-  //   else {
-  //     waitListData.push(req.body);
-  //     res.json(false);
-  //   }
-  // });
+    console.log(notesList)
+    //Check if folder exists
+     fs.existsSync(dBPath_dir) || fs.mkdirSync(dBPath_dir) 
+    // Create output file
+    writeFileAsync(dBPath, JSON.stringify(notesList), { flag : 'w' },(err) => {
+        if (err) throw err;
+        console.log("Succesfully saved new note")
+    });
+      res.json(true);
+
+  });  
 
 };
