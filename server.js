@@ -2,9 +2,14 @@
 // DEPENDENCIES
 // Series of npm packages that we will use to give our server useful functionality
 // ==============================================================================
+// global.nextNoteID ='';
+
+  global.count = 0;
 
 const express = require("express");
 const path = require('path');
+
+
 // ==============================================================================
 // EXPRESS CONFIGURATION
 // This sets up the basic properties for our express server
